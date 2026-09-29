@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DocSequence.Api/DocSequence.Api.csproj" />
+  <Project Path="DocSequence.Tests/DocSequence.Tests.csproj" />
+</Solution>
