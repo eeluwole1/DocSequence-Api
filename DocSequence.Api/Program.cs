@@ -1,5 +1,6 @@
 using DocSequence.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using DocSequence.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+    
+builder.Services.AddScoped<AllocationService>();
 
 var app = builder.Build();
 
