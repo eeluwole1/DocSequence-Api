@@ -39,3 +39,12 @@ Content-Type: application/json
 
 ### 7. Get allocation by id -> expect 200 (use the allocationId returned by request 1)
 GET {{baseUrl}}/api/document-numbers/3
+
+### 8. Document types
+GET {{baseUrl}}/api/document-types
+
+### 9. History, newest first
+GET {{baseUrl}}/api/document-numbers?pageSize=5
+
+### 10. History filtered by type and identifier
+GET {{baseUrl}}/api/document-numbers?documentTypeId=1&identifier=cxy-104

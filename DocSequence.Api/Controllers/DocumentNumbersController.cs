@@ -6,7 +6,7 @@ namespace DocSequence.Api.Controllers;
 
 [ApiController]
 [Route("api/document-numbers")]
-public sealed class DocumentNumbersController(AllocationService allocationService) : ControllerBase
+public sealed class DocumentNumbersController(AllocationService allocationService, HistoryService historyService) : ControllerBase   // ① added HistoryService
 {
     // SRS §13.6: 201 new, 200 replay, 404 unknown/inactive type, 409 key conflict; 400 is automatic via [ApiController]
     [HttpPost]
@@ -29,6 +29,11 @@ public sealed class DocumentNumbersController(AllocationService allocationServic
             _ => throw new InvalidOperationException($"Unhandled allocation status {result.Status}")
         };
     }
+
+    // ② NEW. SRS §13.3-13.4. [FromQuery] is required: [ApiController] would otherwise expect a JSON body.
+    [HttpGet]
+    public Task<PagedResponse<AllocationSummary>> GetHistory([FromQuery] HistoryQuery query, CancellationToken ct) =>
+        historyService.SearchAsync(query, ct);
 
     [HttpGet("{id:long}")]
     public async Task<ActionResult<AllocationResponse>> GetById(long id, CancellationToken ct)
