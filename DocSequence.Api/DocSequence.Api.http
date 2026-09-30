@@ -1,6 +1,41 @@
-@DocSequence.Api_HostAddress = http://localhost:5294
+@baseUrl = http://localhost:5294
+@key = f30fe6a1-5b82-40be-890f-47be869485da
 
-GET {{DocSequence.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### 1. Allocate CXY -> expect 201 with CXY-10429
+POST {{baseUrl}}/api/document-numbers
+Content-Type: application/json
 
-###
+{ "documentTypeId": 1, "documentName": "Pump housing drawing", "engineerName": "Test Engineer", "requestKey": "{{key}}" }
+
+### 2. Same key, same body (lost-response retry) -> expect 200, SAME CXY-10429
+POST {{baseUrl}}/api/document-numbers
+Content-Type: application/json
+
+{ "documentTypeId": 1, "documentName": "Pump housing drawing", "engineerName": "Test Engineer", "requestKey": "{{key}}" }
+
+### 3. Same key, different body -> expect 409
+POST {{baseUrl}}/api/document-numbers
+Content-Type: application/json
+
+{ "documentTypeId": 1, "documentName": "Different drawing", "engineerName": "Test Engineer", "requestKey": "{{key}}" }
+
+### 4. PXY with a new key -> expect 201 with PXY-10429 (independent sequence)
+POST {{baseUrl}}/api/document-numbers
+Content-Type: application/json
+
+{ "documentTypeId": 2, "documentName": "Valve drawing", "engineerName": "Test Engineer", "requestKey": "22222222-2222-2222-2222-222222222222" }
+
+### 5. Unknown type -> expect 404
+POST {{baseUrl}}/api/document-numbers
+Content-Type: application/json
+
+{ "documentTypeId": 99, "documentName": "X", "engineerName": "Test Engineer", "requestKey": "33333333-3333-3333-3333-333333333333" }
+
+### 6. Whitespace-only name, missing key -> expect 400 with field errors
+POST {{baseUrl}}/api/document-numbers
+Content-Type: application/json
+
+{ "documentTypeId": 1, "documentName": "   ", "engineerName": "Test Engineer" }
+
+### 7. Get allocation by id -> expect 200 (use the allocationId returned by request 1)
+GET {{baseUrl}}/api/document-numbers/3

@@ -1,8 +1,10 @@
+using System.Linq.Expressions;
 using DocSequence.Api.Contracts;
 using DocSequence.Api.Data;
 using DocSequence.Api.Entities;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace DocSequence.Api.Services;
 
@@ -89,9 +91,15 @@ public sealed class AllocationService(AppDbContext db, ILogger<AllocationService
         return equivalent ? AllocationResult.Replayed(existing) : AllocationResult.Conflict();
     }
 
+    public Task<AllocationResponse?> FindByIdAsync(long id, CancellationToken ct) =>
+        FindAsync(d => d.GeneratedDocumentId == id, ct);
+
     private Task<AllocationResponse?> FindByRequestKeyAsync(Guid requestKey, CancellationToken ct) =>
+        FindAsync(d => d.RequestKey == requestKey, ct);
+
+    private Task<AllocationResponse?> FindAsync(Expression<Func<GeneratedDocument, bool>> predicate, CancellationToken ct) =>
         db.GeneratedDocuments.AsNoTracking()
-            .Where(d => d.RequestKey == requestKey)
+            .Where(predicate)
             .Select(d => new AllocationResponse(
                 d.GeneratedDocumentId, d.DocumentTypeId, d.DocumentType.Prefix, d.Number, d.Identifier,
                 d.DocumentName, d.EngineerName, d.RequestKey,
