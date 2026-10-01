@@ -9,7 +9,8 @@ using Microsoft.Extensions.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 // Every ProblemDetails (validation, 404, 409, 429, 500, 503) carries the correlation ID (SRS §13.5)
 builder.Services.AddProblemDetails(options =>
@@ -78,7 +79,8 @@ app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();     // /swagger/v1/swagger.json
+    app.UseSwaggerUI();   // /swagger
 }
 else
 {
