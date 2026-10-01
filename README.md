@@ -4,6 +4,10 @@
 
 **Engineering Document Number Management System**: a concurrency-safe service that gives every engineering document a unique, sequential, human-readable identifier such as `CXY-10431`.
 
+**Live demo:** [purple-flower-04ffe8110.2.azurestaticapps.net](https://purple-flower-04ffe8110.2.azurestaticapps.net) · **API health:** [/health](https://docsequence-api-fkdxawc9c0gjeqcc.canadacentral-01.azurewebsites.net/health)
+
+> The demo runs on free tiers: the first request after idle time can take up to a minute while the API and the serverless database wake up.
+
 > ASP.NET Core 10 · Entity Framework Core 10 · SQL Server · Angular 21 · Tailwind CSS 4 · xUnit · Testcontainers · Vitest
 
 This repository contains the **backend API and its tests**. The Angular frontend lives in the companion repository **[DocSequence-Client](https://github.com/eeluwole1/DocSequence-Client)**.
@@ -494,7 +498,7 @@ Version 1 deliberately has **no authentication**: the engineer name is self-repo
 - [x] Hardening: ProblemDetails, 503, correlation IDs, rate limiting, health, CORS
 - [x] 42 backend and 6 frontend automated tests
 - [x] CI with GitHub Actions (build + all tests on every push)
-- [ ] Deployment: Azure SQL, App Service, Static Web Apps
+- [x] Deployment: Azure SQL (free offer), App Service (API), Static Web Apps (frontend); deploys run only after CI passes
 - [ ] Organizational SSO (engineer identity from claims)
 - [ ] Document-type administration UI
 - [ ] Voiding and bulk reservation workflows
