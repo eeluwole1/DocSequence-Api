@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.MsSql;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 
 namespace DocSequence.Tests.Infrastructure;
 
@@ -34,14 +35,17 @@ public sealed class DocSequenceApiFactory : WebApplicationFactory<Program>, IAsy
         using var scope = Services.CreateScope();
         await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.MigrateAsync();
     }
-    
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");   // skips appsettings.Development.json (LocalDB)
         builder.UseSetting("ConnectionStrings:Default", ConnectionString);
-        builder.ConfigureLogging(logging => logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning));
+        builder.ConfigureAppConfiguration(config => config.AddInMemoryCollection(
+            new Dictionary<string, string?> { ["RateLimiting:Enabled"] = "false" }));   // AC-020: 100-request test must not be throttled
+        builder.ConfigureLogging(logging => logging
+            .AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning)
+            .AddFilter("Microsoft.EntityFrameworkCore.Update", LogLevel.None));   // expected same-key race collisions
     }
-
     async Task IAsyncLifetime.DisposeAsync()
     {
         await base.DisposeAsync();

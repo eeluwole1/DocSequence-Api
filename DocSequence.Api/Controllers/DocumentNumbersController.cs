@@ -1,14 +1,18 @@
 using DocSequence.Api.Contracts;
+using DocSequence.Api.Infrastructure;
 using DocSequence.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DocSequence.Api.Controllers;
 
 [ApiController]
 [Route("api/document-numbers")]
-public sealed class DocumentNumbersController(AllocationService allocationService, HistoryService historyService) : ControllerBase   // ① added HistoryService
+public sealed class DocumentNumbersController(AllocationService allocationService, HistoryService historyService) : ControllerBase
 {
-    // SRS §13.6: 201 new, 200 replay, 404 unknown/inactive type, 409 key conflict; 400 is automatic via [ApiController]
+    // SRS §13.6: 201 new, 200 replay, 404 unknown/inactive type, 409 key conflict; 400 is automatic via [ApiController].
+    // Only generation is rate limited (NFR-009); reads stay unlimited.
+    [EnableRateLimiting(RateLimitSettings.GeneratePolicy)]
     [HttpPost]
     public async Task<IActionResult> Allocate(AllocateRequest request, CancellationToken ct)
     {
@@ -30,7 +34,7 @@ public sealed class DocumentNumbersController(AllocationService allocationServic
         };
     }
 
-    // ② NEW. SRS §13.3-13.4. [FromQuery] is required: [ApiController] would otherwise expect a JSON body.
+    // SRS §13.3-13.4. [FromQuery] is required: [ApiController] would otherwise expect a JSON body.
     [HttpGet]
     public Task<PagedResponse<AllocationSummary>> GetHistory([FromQuery] HistoryQuery query, CancellationToken ct) =>
         historyService.SearchAsync(query, ct);
