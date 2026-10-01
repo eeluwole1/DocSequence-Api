@@ -1,10 +1,12 @@
 # DocSequence
 
+[![CI](https://github.com/eeluwole1/DocSequence-Api/actions/workflows/ci.yml/badge.svg)](https://github.com/eeluwole1/DocSequence-Api/actions/workflows/ci.yml)
+
 **Engineering Document Number Management System**: a concurrency-safe service that gives every engineering document a unique, sequential, human-readable identifier such as `CXY-10431`.
 
 > ASP.NET Core 10 · Entity Framework Core 10 · SQL Server · Angular 21 · Tailwind CSS 4 · xUnit · Testcontainers · Vitest
 
-This repository contains the **backend API and its tests**. The Angular frontend lives in the companion repository **DocSequence-Client**.
+This repository contains the **backend API and its tests**. The Angular frontend lives in the companion repository **[DocSequence-Client](https://github.com/eeluwole1/DocSequence-Client)**.
 
 ---
 
@@ -349,14 +351,14 @@ Send your own `X-Correlation-ID` header and it is echoed back in the response he
 ### 1. Run the API
 
 ```bash
-git clone <this-repo-url> DocSequence
+git clone https://github.com/eeluwole1/DocSequence-Api.git DocSequence
 cd DocSequence
 dotnet tool install --global dotnet-ef
 dotnet ef database update -p DocSequence.Api
 dotnet run --project DocSequence.Api --launch-profile http
 ```
 
-The API listens on **http://localhost:5294**. Check it with:
+The API listens on **http://localhost:5294**. In Development, **Swagger UI** is at **http://localhost:5294/swagger** and opens automatically when you start the API from Visual Studio. Or check it from a terminal:
 
 ```bash
 curl http://localhost:5294/api/document-types
@@ -367,9 +369,11 @@ curl http://localhost:5294/health
 
 ### 2. Run the frontend
 
-In the **DocSequence-Client** repository:
+In the **[DocSequence-Client](https://github.com/eeluwole1/DocSequence-Client)** repository:
 
 ```bash
+git clone https://github.com/eeluwole1/DocSequence-Client.git
+cd DocSequence-Client
 npm install
 npm start
 ```
@@ -428,7 +432,7 @@ The backend tests start a **real SQL Server 2022 container** through Testcontain
 | AC-020 Configurable rate limit | `OperationalTests.Generation_is_rate_limited_when_enabled_but_reads_and_health_are_not` |
 | AC-022 Constraint-specific mapping | `FailureHandlingTests.Business_number_collision_returns_500_and_rolls_back` |
 | AC-023 Date filter rules | `HistoryApiTests.Offsetless_dates_are_treated_as_utc`, `Invalid_query_returns_400` |
-| Frontend: request-key reuse, pending state, errors | `generate-form.spec.ts` (DocSequence-Client) |
+| Frontend: request-key reuse, pending state, errors | `generate-form.spec.ts` ([DocSequence-Client](https://github.com/eeluwole1/DocSequence-Client)) |
 
 ---
 
@@ -489,7 +493,7 @@ Version 1 deliberately has **no authentication**: the engineer name is self-repo
 - [x] Angular frontend: Generate and History pages
 - [x] Hardening: ProblemDetails, 503, correlation IDs, rate limiting, health, CORS
 - [x] 42 backend and 6 frontend automated tests
-- [ ] CI with GitHub Actions
+- [x] CI with GitHub Actions (build + all tests on every push)
 - [ ] Deployment: Azure SQL, App Service, Static Web Apps
 - [ ] Organizational SSO (engineer identity from claims)
 - [ ] Document-type administration UI
