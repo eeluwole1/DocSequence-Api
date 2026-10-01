@@ -39,4 +39,11 @@ public abstract class ApiTestBase(DocSequenceApiFactory factory)
             .Select(t => t.CurrentNumber)
             .SingleAsync();
     }
+
+    // Runs SQL directly against the test database (interpolated values become SQL parameters)
+    protected async Task ExecuteSqlAsync(FormattableString sql)
+    {
+        using var scope = Factory.Services.CreateScope();
+        await scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.ExecuteSqlAsync(sql);
+    }
 }
